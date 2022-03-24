@@ -12,8 +12,8 @@ y_fruits = fruits['fruit_label']
 target_names_fruits = ['apple', 'mandarin', 'orange', 'lemon']
 title = 'GBDT, complex binary dataset, default settings'
 
-X_train, X_test, y_train, y_test = train_test_split(X_fruits.as_matrix(),
-                                                   y_fruits.as_matrix(),
+X_train, X_test, y_train, y_test = train_test_split(X_fruits.values,
+                                                   y_fruits.values,
                                                    random_state = 0)
 fig, subaxes = plt.subplots(6, 1, figsize=(6, 32))
 
