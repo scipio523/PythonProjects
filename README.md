@@ -1,6 +1,6 @@
 # PythonProjects
 
-Welcome! These are some of my personal Python projects. Note that you will need the usual data science libraries to run most of these (e.g. pandas, numpy, sklearn, matplotlib, etc).
+Welcome! These are some of my personal Python projects. Note that you will need the usual data science libraries to run most of these (pandas, numpy, sklearn, matplotlib, etc).
 
 Project Descriptions:
 * 13f Scraper > Scrapes 13f filings from the edgar website using BeautifulSoup.
