@@ -1,11 +1,11 @@
-# Script to scrape 13f filings from the SEC website and save it to Excel.
+# Script to scrape 13f filings from the SEC EDGAR website and save it to Excel.
 
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 import re
 
-def xml_to_xlsx(xml, CIK, year, quarter):
+def xml_to_xlsx(xml, filename):
 
     issuers = xml.body.findAll('nameofissuer')
     cusips = xml.body.findAll('cusip')
@@ -29,40 +29,48 @@ def xml_to_xlsx(xml, CIK, year, quarter):
         }
         df = pd.concat([df, pd.DataFrame([row])], ignore_index=True)
 
-    filename = f"{year} Q{quarter} {CIK}.xlsx"
     df.to_excel(filename, index=False)
     print(f"Saved to {filename}")
 
-def download_13f(CIK_list, year, quarter):
+def download_13f(CIK_list, date):
     for CIK in CIK_list:
         url = f"https://www.sec.gov/cgi-bin/browse-edgar?CIK={CIK}&owner=exclude&action=getcompany&type=13F-HR"
+        url = f"https://data.sec.gov/rss?cik={CIK}"
 
         headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/97.0.4692.99 Safari/537.36',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'HOST': 'www.sec.gov',
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/99.0.4844.74 Safari/537.36 Edg/99.0.1150.46'
         }
 
-        # access web page showing all recent 13f filings of the given fund
-        response = requests.get(url, headers=headers)
-        html = BeautifulSoup(response.text, "html.parser")
+        # access the rss feed showing all recent 13f filings of the given fund
+        try:
+            response = requests.get(url, headers=headers)
+        except Exception as e:
+            print(f'Error fetching the URL: {url}')
+            print(e)
+        rss = BeautifulSoup(response.content, "lxml")
         
-        # access web page of the most recent 13f filing
-        last_report_url = ('https://www.sec.gov' + html.findAll('a', id="documentsbutton")[0]['href'])
+        # get fund name
+        name = rss.findAll('confirmed-name')[0].text
+
+        # access the web page for the filing for the chosen reference date
+        reports = rss.findAll('content-type', attrs={'type': 'text/xml'})
+        for report in reports:
+            if report.find('report-date').text == date:
+                last_report_url = report.find('filing-href').text
         response = requests.get(last_report_url, headers=headers)
         html = BeautifulSoup(response.text, "html.parser")
 
-        # access web page of the xml containing the 13f data
+        # access the xml containing the 13f data
         tags = html.findAll('a', attrs={'href': re.compile('xml')})
         for tag in tags:
             if tag.text.lower() == 'form13finfotable.xml':
                 xml_url = tag.get('href')
         xml = requests.get('https://www.sec.gov' + xml_url, headers=headers)
         xml_parsed = BeautifulSoup(xml.content, "lxml")
-        xml_to_xlsx(xml_parsed, CIK, year, quarter)
+        filename = f"{date} {name}.xlsx"
+        xml_to_xlsx(xml_parsed, filename)
 
-CIK_list = ['1656456', '1649339']
-year     = 2021
-quarter  = 4
+CIK_list = ['1656456', '1649339']  # CIK (Central Index Key) is an identifier used by the SEC. Choose the CIKs of the funds you'd like to download 13f filings for.
+date = '2021-12-31'  # enter date in format YYYY-MM-DD
 
-download_13f(CIK_list, str(year), str(quarter))
+download_13f(CIK_list, date)
