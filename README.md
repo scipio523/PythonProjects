@@ -3,7 +3,7 @@
 Welcome! These are some of my personal Python projects. Note that you will need the usual data science libraries to run most of these (pandas, numpy, sklearn, matplotlib, etc). Any required data files are stored within the same folder as the python file.
 
 Project Descriptions:
-* 13f Scraper > Scrapes 13f filings from the edgar website using BeautifulSoup.
+* 13f Scraper > Scrapes 13f filings from the SEC EDGAR website using BeautifulSoup.
 * 1Min_Analysis > Tests a simple mean reversion and trend following strategy on 1 minute stock data.
 * Advent of Code > A collection of my solutions to some fun coding puzzles. See https://adventofcode.com/2021/about for context.
 * Machine Learning > Coursework from the Coursera class taught by Andrew Ng as well as a simple Voting Classifier for stock price prediction.
