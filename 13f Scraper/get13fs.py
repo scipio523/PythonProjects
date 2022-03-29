@@ -34,7 +34,6 @@ def xml_to_xlsx(xml, filename):
 
 def download_13f(CIK_list, date):
     for CIK in CIK_list:
-        url = f"https://www.sec.gov/cgi-bin/browse-edgar?CIK={CIK}&owner=exclude&action=getcompany&type=13F-HR"
         url = f"https://data.sec.gov/rss?cik={CIK}"
 
         headers = {
