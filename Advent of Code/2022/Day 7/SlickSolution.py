@@ -25,7 +25,7 @@ def part_two(sizes):
 
 tree = build_tree(parse('input.txt'))
 
-print(parse('input.txt'))
+print(tree)
 
 print('part 1:', solve(tree, part_one))
 print('part 2:', solve(tree, part_two))
